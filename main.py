@@ -57,17 +57,17 @@ distances = {
 planes = {
     "Airbus A330-300": {
         "Seat price coef. per class": {
-            "Economy": {"Early in the morning": 1.0, "Early": 1.5, "Late": 1.0},
-            "Premium Economy": {"Early in the morning": 2.0, "Early": 2.5, "Late": 2.0},
-            "Business class": {"Early in the morning": 5.0, "Early": 6.5, "Late": 5.0},
+            "Economy": {"Early in the morning": 1.0, "Early": 1.5, "Late": 1.2},
+            "Premium Economy": {"Early in the morning": 2.0, "Early": 2.5, "Late": 2.3},
+            "Business class": {"Early in the morning": 5.0, "Early": 6.5, "Late": 6.0},
         },
         "Fuel consumption coef.": 9.5,
     },
     "Boeing 747-400": {
         "Seat price coef. per class": {
-            "Economy": {"Early in the morning": 1.0, "Early": 1.5, "Late": 1.0},
-            "Premium Economy": {"Early in the morning": 3.0, "Early": 3.6, "Late": 3.0},
-            "Business class": {"Early in the morning": 6.0, "Early": 7.2, "Late": 6.0},
+            "Economy": {"Early in the morning": 1.0, "Early": 1.5, "Late": 1.2},
+            "Premium Economy": {"Early in the morning": 3.0, "Early": 3.6, "Late": 3.3},
+            "Business class": {"Early in the morning": 6.0, "Early": 7.2, "Late": 6.5},
         },
         "Fuel consumption coef.": 10.0,
     },
@@ -98,13 +98,15 @@ class Flight:
     departure_city: str
     arrival_city: str
     time_of_departure: str
+    plane: str
+    seat_class: str
 
     @staticmethod
     def flight_id_generator():
         return "EFL" + str(random.randint(1000, 9999))
 
-    @classmethod
-    def time_of_travel(cls):
+    @staticmethod
+    def time_of_travel():
         day_time = random.choice(Flight.time_options)
         return day_time
 
@@ -117,8 +119,8 @@ class Flight:
         plane = random.choice(planes_list)
         return plane
 
-    @classmethod
-    def get_seat_class(cls):
+    @staticmethod
+    def get_seat_class():
         plane_name = Flight.get_plane()
         seat_classes_list = list(
             planes[plane_name]["Seat price coef. per class"].keys()
@@ -127,22 +129,21 @@ class Flight:
         return seat
 
     def get_price(self) -> float:
-        time = Flight.time_of_travel()
-        plane = Flight.get_plane()
-        seat = Flight.get_seat_class()
-        print(plane)
-        return round(
+        price = round(
             (
                 self.get_flight_distance()
-                * planes[plane]["Fuel consumption coef."]
-                * planes[plane]["Seat price coef. per class"][seat][time]
+                * planes[self.plane]["Fuel consumption coef."]
+                * planes[self.plane]["Seat price coef. per class"][self.seat_class][
+                    self.time_of_departure
+                ]
                 * 0.01
             ),
             2,
         )
+        return price
 
     def __str__(self) -> str:
-        return f"Flight {self.flight_id_generator()}, class: {self.get_seat_class()}, departure city: {self.departure_city}, arrival city: {self.arrival_city}, leaves: {self.time_of_travel()}, price: {self.get_price()} USD."
+        return f"Flight {self.flight_id_generator()}, plane: {self.plane}, class: {self.seat_class}, departure city: {self.departure_city}, arrival city: {self.arrival_city}, leaves: {self.time_of_departure}, price: {self.get_price()} USD."
 
 
 departure = ""
@@ -170,52 +171,60 @@ if __name__ == "__main__":
         try:
             user_option = input(
                 f"""
-99.  'Exit'
+
 """
+                # 99.  'Find the flight!'
             )
         except:
             print("Wrong input. Please enter a number from the list...")
             break
         if user_option == "1":
-            if departure is "":
+            if departure == "":
                 departure = destinations[0]
                 os.system("cls")
                 print_destinations(departure)
             else:
                 arrival = destinations[0]
+                os.system("cls")
+                break
 
         elif user_option == "2":
-            if departure is "":
+            if departure == "":
                 departure = destinations[1]
                 os.system("cls")
                 print_destinations(departure)
             else:
                 arrival = destinations[1]
+                os.system("cls")
+                break
 
         elif user_option == "3":
-            if departure is "":
+            if departure == "":
                 departure = destinations[2]
                 os.system("cls")
                 print_destinations(departure)
             else:
                 arrival = destinations[2]
+                os.system("cls")
+                break
 
         elif user_option == "4":
-            if departure is "":
+            if departure == "":
                 departure = destinations[3]
                 os.system("cls")
                 print_destinations(departure)
             else:
                 arrival = destinations[3]
+                os.system("cls")
+                break
 
-        elif user_option == "5" and departure is "":
+        elif user_option == "5" and departure == "":
             departure = destinations[4]
             os.system("cls")
             print_destinations(departure)
 
         elif user_option == "99":
             os.system("cls")
-            print("We can offer you these flights: ")
             break
 
         else:
@@ -223,34 +232,83 @@ if __name__ == "__main__":
             print("Wrong input. Please enter a number from the list...")
             print_destinations()
 
-# print(departure, arrival)
-
 
 flight_one = Flight(
     id=Flight.flight_id_generator(),
     departure_city=departure,
     arrival_city=arrival,
+    plane=Flight.get_plane(),
     time_of_departure=Flight.time_of_travel(),
-    # plane="Airbus A330-300",
-    # seat_class="Business class",
+    seat_class=Flight.get_seat_class(),
 )
 flight_two = Flight(
     id=Flight.flight_id_generator(),
     departure_city=departure,
     arrival_city=arrival,
+    plane=Flight.get_plane(),
     time_of_departure=Flight.time_of_travel(),
-    # plane="Airbus A330-300",
-    # seat_class="Business class",
+    seat_class=Flight.get_seat_class(),
 )
 flight_three = Flight(
     id=Flight.flight_id_generator(),
     departure_city=departure,
     arrival_city=arrival,
+    plane=Flight.get_plane(),
     time_of_departure=Flight.time_of_travel(),
-    # plane="Airbus A330-300",
-    # seat_class="Business class",
+    seat_class=Flight.get_seat_class(),
 )
 
-print(flight_one)
-print(flight_two)
-print(flight_three)
+while True:
+    try:
+        user_option = input(
+            f"""
+We can offer you these flights: 
+
+1.  {flight_one}
+2.  {flight_two}
+3.  {flight_three}
+4.  Exit!
+"""
+        )
+    except:
+        print("Wrong input. Please enter a number from the list...")
+        break
+    if user_option == "1":
+        os.system("cls")
+        print(
+            f"""You have bought:
+{flight_one}
+
+Have a nice trip!
+"""
+        )
+        break
+    elif user_option == "2":
+        os.system("cls")
+        print(
+            f"""You have bought:
+{flight_two}
+
+Have a nice trip!
+"""
+        )
+        break
+    elif user_option == "3":
+        os.system("cls")
+        print(
+            f"""You have bought:
+{flight_three}
+
+Have a nice trip!
+"""
+        )
+        break
+    elif user_option == "4":
+        os.system("cls")
+        print("Thank you for choosing 'Earth is flat' airways! ")
+        break
+
+    else:
+        os.system("cls")
+        print("Wrong input. Please buy a new ticket.")
+        break
